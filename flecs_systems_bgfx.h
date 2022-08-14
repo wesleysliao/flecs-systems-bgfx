@@ -1,11 +1,11 @@
 #ifndef FLECS_SYSTEMS_BGFX_H
 #define FLECS_SYSTEMS_BGFX_H
 
-#include "flecs.h"
-#include "flecs_components_gui.h"
-#include "flecs_components_input.h"
-#include "flecs_systems_sdl2.h"
-#include "bgfx/c99/bgfx.h"
+#include <flecs.h>
+#include <flecs_components_gui.h>
+#include <flecs_components_input.h>
+#include <flecs_systems_sdl2.h>
+#include <bgfx/c99/bgfx.h>
 #include <SDL2/SDL_syswm.h>
 
 #ifndef flecs_systems_bgfx_STATIC
@@ -22,18 +22,13 @@
 #define FLECS_SYSTEMS_BGFX_API
 #endif
 
-typedef struct BgfxInit {
+ECS_STRUCT(BgfxInit, {
   bgfx_init_t init;
-} BgfxInit;
+});
 
-typedef struct FlecsSystemsBgfx {
-  ECS_DECLARE_COMPONENT(BgfxInit);
-} FlecsSystemsBgfx;
+ECS_COMPONENT_DECLARE(BgfxInit);
 
 FLECS_SYSTEMS_BGFX_API
 void FlecsSystemsBgfxImport(ecs_world_t *world);
-
-#define FlecsSystemsBgfxImportHandles(handles)                                 \
-  ECS_IMPORT_COMPONENT(handles, BgfxInit);
 
 #endif

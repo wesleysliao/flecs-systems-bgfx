@@ -32,9 +32,9 @@ static int sdl_set_window(SDL_Window *_window) {
 static void BgfxSet(ecs_iter_t *it) {
 
   ecs_world_t *world = it->world;
-  Sdl2Window *window = ecs_column(it, Sdl2Window, 1);
-  EcsCanvas *canvas = ecs_column(it, EcsCanvas, 2);
-  ecs_entity_t ecs_typeid(BgfxInit) = ecs_column_entity(it, 3);
+  Sdl2Window *window = ecs_field(it, Sdl2Window, 1);
+  EcsCanvas *canvas = ecs_field(it, EcsCanvas, 2);
+  ecs_entity_t e_init = ecs_field_id(it, 3);
 
   for (int32_t i = 0; i < it->count; i++) {
     uint32_t debug = BGFX_DEBUG_STATS;
@@ -63,8 +63,8 @@ static void BgfxDestroy(ecs_iter_t *it) { bgfx_shutdown(); }
 
 static void BgfxRender(ecs_iter_t *it) {
   ecs_world_t *world = it->world;
-  Sdl2Window *window = ecs_column(it, Sdl2Window, 1);
-  BgfxInit *init = ecs_column(it, BgfxInit, 2);
+  Sdl2Window *window = ecs_field(it, Sdl2Window, 1);
+  BgfxInit *init = ecs_field(it, BgfxInit, 2);
 
   int32_t i;
   for (i = 0; i < it->count; i++) {
@@ -94,13 +94,20 @@ void FlecsSystemsBgfxImport(ecs_world_t *world) {
   ECS_IMPORT(world, FlecsSystemsSdl2);
   ECS_IMPORT(world, FlecsComponentsGui);
 
-  ECS_COMPONENT(world, BgfxInit);
+  ecs_set_name_prefix(world, "Bgfx");
 
-  ECS_SYSTEM(world, BgfxSet, EcsOnSet, flecs.systems.sdl2.window.Window,
-             flecs.components.gui.Canvas,
-             : BgfxInit);
+  ECS_COMPONENT_DEFINE(world, BgfxInit);
 
-  ECS_SYSTEM(world, BgfxDestroy, EcsUnSet, BgfxInit);
-  ECS_SYSTEM(world, BgfxRender, EcsPostUpdate, flecs.systems.sdl2.window.Window,
-             flecs.systems.bgfx.BgfxInit);
+  ECS_OBSERVER(world, BgfxSet, EcsOnSet,
+               flecs.systems.sdl2.window.Window,
+               flecs.components.gui.Canvas,
+               flecs.systems.bgfx.Init);
+               //: BgfxInit);
+
+  ECS_OBSERVER(world, BgfxDestroy, EcsUnSet,
+               flecs.systems.bgfx.Init);
+
+  ECS_SYSTEM(world, BgfxRender, EcsPostUpdate,
+             flecs.systems.sdl2.window.Window,
+             flecs.systems.bgfx.Init);
 }
