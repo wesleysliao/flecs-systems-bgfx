@@ -37,6 +37,7 @@ static void BgfxSet(ecs_iter_t *it) {
   ecs_entity_t e_init = ecs_field_id(it, 3);
 
   for (int32_t i = 0; i < it->count; i++) {
+
     uint32_t debug = BGFX_DEBUG_STATS;
     uint32_t reset = 0;
 
@@ -98,11 +99,10 @@ void FlecsSystemsBgfxImport(ecs_world_t *world) {
 
   ECS_COMPONENT_DEFINE(world, BgfxInit);
 
-  ECS_OBSERVER(world, BgfxSet, EcsOnSet,
+  ECS_OBSERVER(world, BgfxSet, EcsOnAdd,
                flecs.systems.sdl2.window.Window,
                flecs.components.gui.Canvas,
                flecs.systems.bgfx.Init);
-               //: BgfxInit);
 
   ECS_OBSERVER(world, BgfxDestroy, EcsUnSet,
                flecs.systems.bgfx.Init);

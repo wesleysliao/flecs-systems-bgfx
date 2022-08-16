@@ -22,6 +22,11 @@
 #define FLECS_SYSTEMS_BGFX_API
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+FLECS_SYSTEMS_BGFX_API
 ECS_STRUCT(BgfxInit, {
   bgfx_init_t init;
 });
@@ -30,5 +35,35 @@ ECS_COMPONENT_DECLARE(BgfxInit);
 
 FLECS_SYSTEMS_BGFX_API
 void FlecsSystemsBgfxImport(ecs_world_t *world);
+
+#ifdef __cplusplus
+}
+#endif
+
+#ifdef __cplusplus
+#ifndef FLECS_NO_CPP
+
+namespace flecs {
+namespace systems {
+
+class bgfx {
+public:
+    using Init = BgfxInit;
+
+    bgfx(flecs::world& ecs) {
+        // Load module contents
+        FlecsSystemsBgfxImport(ecs);
+
+        // Bind module contents with C++ types
+        ecs.module<flecs::systems::bgfx>();
+        ecs.component<Init>();
+    }
+};
+
+}
+}
+
+#endif // FLECS_NO_CPP
+#endif // __cplusplus
 
 #endif
